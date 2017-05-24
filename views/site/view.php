@@ -67,14 +67,14 @@ $this->title = $model->title;
     <span class="image main"><img src="<?= Html::encode($model->img); ?>" alt="<?= Html::encode($model->title) ?>"></span>
     <p><?= HtmlPurifier::process($model->text) ?></p>
     <ul class="actions">
-        <li><a href="#openModal" class="button popup-modal">GET NOTIFIED</a></li>
+        <li><a href="#openModal" class="button popup-modal"><?=$model->status?></a></li>
     </ul>
 </section>
 
 <div id="openModal" class="modalDialog">
     <div>
         <a href="#close" title="Закрыть" class="close">X</a>
-        <iframe style="width: 100%; height: 100%" src="https://player.twitch.tv/?channel=playhearthstone&autoplay=false" frameborder="0" allowfullscreen="true" scrolling="no"></iframe>
+        <iframe style="width: 100%; height: 100%" src="<?=$model->videos?>&autoplay=false" frameborder="0" allowfullscreen="true" scrolling="no"></iframe>
     </div>
 </div>
 

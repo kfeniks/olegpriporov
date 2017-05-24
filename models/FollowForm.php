@@ -40,14 +40,16 @@ class FollowForm extends Model
     public function sendEmail($email)
     {
         $subject = 'Новая подписка';
+        $news = Yii::$app->request->url;
         $body = '
              Письмо на сайте OlegPri             
              Здравствуй, админ! Тебе пришло письмо с сайта.             
              Почта: '.$email.'
+             Страница: '.$news.'
                                     
         ';
         return Yii::$app->mailer->compose()
-            ->setTo([Yii::$app->params['supportEmail'] => 'My site'])
+            ->setTo([Yii::$app->params['followEmail'] => 'Oleg'])
             ->setFrom([Yii::$app->params['supportEmail'] => 'My site'])
             ->setSubject($subject)
             ->setTextBody($body)

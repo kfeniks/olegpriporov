@@ -9,6 +9,7 @@ use yii\bootstrap\NavBar;
 use yii\widgets\Breadcrumbs;
 use app\assets\AppAsset;
 use app\components\FollowusWidget;
+use yii\helpers\Url;
 
 AppAsset::register($this);
 ?>
@@ -38,7 +39,7 @@ AppAsset::register($this);
         <div class="inner">
 
             <!-- Logo -->
-            <a href="index.html" class="logo">
+            <a href="<?= Url::to(['site/index']); ?>" class="logo">
                 <span class="symbol"><img src="/web/images/logo.svg" alt="" /></span><span class="title">3 FINGERS</span>
             </a>
 
@@ -56,11 +57,22 @@ AppAsset::register($this);
     <nav id="menu">
         <h2>Menu</h2>
         <ul>
-            <li><a href="index.html">Home</a></li>
-            <li><a href="generic.html">Ipsum veroeros</a></li>
-            <li><a href="generic.html">Tempus etiam</a></li>
-            <li><a href="generic.html">Consequat dolor</a></li>
-            <li><a href="elements.html">Elements</a></li>
+           <?php if (Yii::$app->user->isGuest) {?>
+               <li><a href="<?= Url::to(['site/index']); ?>">Home</a></li>
+            <li><a href="<?= Url::to(['site/about']); ?>">About</a></li>
+            <?php } else {?>
+               <li><a href="<?= Url::to(['site/index']); ?>">Home</a></li>
+            <li><a href="<?= Url::to(['site/about']); ?>">About</a></li>
+          <?php
+              echo '<li>'
+               . Html::beginForm(['/site/logout'], 'post')
+               . Html::submitButton(
+                   'Logout (' . Yii::$app->user->identity->username . ')',
+                   ['class' => 'btn btn-link logout']
+               )
+               . Html::endForm()
+               . '</li>';
+           }?>
         </ul>
     </nav>
 
@@ -82,14 +94,8 @@ AppAsset::register($this);
             <section>
                 <h2>Follow</h2>
                 <ul class="icons">
-                    <li><a href="#" class="icon style2 fa-twitter"><span class="label">Twitter</span></a></li>
-                    <li><a href="#" class="icon style2 fa-facebook"><span class="label">Facebook</span></a></li>
-                    <li><a href="#" class="icon style2 fa-instagram"><span class="label">Instagram</span></a></li>
-                    <li><a href="#" class="icon style2 fa-dribbble"><span class="label">Dribbble</span></a></li>
-                    <li><a href="#" class="icon style2 fa-github"><span class="label">GitHub</span></a></li>
-                    <li><a href="#" class="icon style2 fa-500px"><span class="label">500px</span></a></li>
-                    <li><a href="#" class="icon style2 fa-phone"><span class="label">Phone</span></a></li>
-                    <li><a href="#" class="icon style2 fa-envelope-o"><span class="label">Email</span></a></li>
+                    <li><a href="https://www.linkedin.com/in/oleg-priporov-176356a0/" class="icon style2 fa-linkedin"><span class="label">Linkedin</span></a></li>
+                    <li><a href="https://www.artstation.com/artist/olegpriporov" class="icon style2 fa-artstation"><span class="label">Artstation</span></a></li>
                 </ul>
             </section>
             <ul class="copyright">
