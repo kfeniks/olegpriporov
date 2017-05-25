@@ -21,10 +21,18 @@ class Posts extends ActiveRecord
     /**
      * @return array the validation rules.
      */
+
+    public $fileImage;
+
     public function rules()
     {
         return [
-
+            [['title', 'text', 'img', 'cat_id'], 'required'],
+            [['date_event', 'date'], 'safe'],
+            [['cat_id', 'hits', 'hide'], 'integer'],
+            [['title'], 'string', 'max' => 150],
+            [['stream'], 'string', 'max' => 255],
+            [['fileImage'], 'file', 'skipOnEmpty' => true, 'extensions' => 'png, jpg, jpeg', 'maxSize'=>1024 * 1024 * 1],
         ];
     }
 
@@ -39,6 +47,11 @@ class Posts extends ActiveRecord
             'hide' => 'Опубликовано',
             'hits' => 'Просмотров',
             'title' => 'Название',
+            'text' => 'Текст',
+            'date' => 'Дата',
+            'date_event' => 'Начало стрима',
+            'fileImage' => 'Основное изображение',
+            'cat_id' => 'Категория',
         ];
     }
     public function getCategory()

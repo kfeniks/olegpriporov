@@ -1,17 +1,23 @@
 <?php
 
-/* @var $this yii\web\View */
-
 use yii\helpers\Html;
 
-$this->title = 'Create';
-$this->params['breadcrumbs'][] = $this->title;
+/* @var $this yii\web\View */
+/* @var $model app\models\Posts */
+
+$this->title = 'Создать стрим';
+$this->params['breadcrumbs'][] = ['label' => 'Admin Panel', 'url' => ['admin']];
+$this->params['breadcrumbs'][] = 'Create';
 ?>
-<div class="site-about">
+<p>
+    <?= Html::a('Список стримов', ['view_posts'], ['class' => 'btn btn-success']) ?>
+</p>
+<div class="user-update">
+
     <h1><?= Html::encode($this->title) ?></h1>
 
-    <p>
-        This is the Create page. You may modify the following file to customize its content:
-    </p>
+    <?= $this->render('_form', [
+        'model' => $model,
+    ]) ?>
 
 </div>

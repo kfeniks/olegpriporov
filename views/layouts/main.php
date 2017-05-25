@@ -63,16 +63,9 @@ AppAsset::register($this);
             <?php } else {?>
                <li><a href="<?= Url::to(['site/index']); ?>">Home</a></li>
             <li><a href="<?= Url::to(['site/about']); ?>">About</a></li>
-          <?php
-              echo '<li>'
-               . Html::beginForm(['/site/logout'], 'post')
-               . Html::submitButton(
-                   'Logout (' . Yii::$app->user->identity->username . ')',
-                   ['class' => 'btn btn-link logout']
-               )
-               . Html::endForm()
-               . '</li>';
-           }?>
+               <li><a href="<?= Url::to(['site/admin']); ?>">Admin</a></li>
+               <li><a href="<?= Url::to(['site/logout']); ?>"><?= 'Logout (' . Yii::$app->user->identity->username . ')'; ?></a></li>
+          <?php }?>
         </ul>
     </nav>
 

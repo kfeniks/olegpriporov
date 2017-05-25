@@ -14,6 +14,8 @@ use app\models\Posts;
 use app\models\FollowForm;
 use app\models\Email;
 use yii\helpers\Html;
+use yii\web\NotFoundHttpException;
+use yii\web\UploadedFile;
 
 class SiteController extends Controller
 {
@@ -25,26 +27,10 @@ class SiteController extends Controller
         return [
             'access' => [
                 'class' => AccessControl::className(),
-                'only' => ['logout', 'admin', 'create', 'view_posts', 'create_mail', 'view_mails',
-                    'create_category', 'view_category'],
+                'only' => ['logout'],
                 'rules' => [
                     [
                         'actions' => ['logout'],
-                        'allow' => true,
-                        'roles' => ['@'],
-                    ],
-                    [
-                        'actions' => ['admin'],
-                        'allow' => true,
-                        'roles' => ['@'],
-                    ],
-                    [
-                        'actions' => ['create'],
-                        'allow' => true,
-                        'roles' => ['@'],
-                    ],
-                    [
-                        'actions' => ['view_posts'],
                         'allow' => true,
                         'roles' => ['@'],
                     ],
@@ -118,12 +104,12 @@ class SiteController extends Controller
     public function actionLogin()
     {
         if (!Yii::$app->user->isGuest) {
-            return $this->goHome();
+            return $this->render('admin');
         }
 
         $model = new LoginForm();
         if ($model->load(Yii::$app->request->post()) && $model->login()) {
-            return $this->goBack();
+            return $this->render('admin');
         }
         return $this->render('login', [
             'model' => $model,
@@ -192,16 +178,89 @@ class SiteController extends Controller
             return $this->redirect(['site/error']);
         }
     }
+    private function checkRules(){
+        if (Yii::$app->user->isGuest) {
+            return $this->goHome();
+        }
+    }
+
     public function actionAdmin()
     {
+        $this->checkRules();
         return $this->render('admin');
+    }
+
+    protected function findModel($id)
+    {
+        if (($model = Posts::findOne($id)) !== null) {
+            return $model;
+        } else {
+            throw new NotFoundHttpException('The requested page does not exist.');
+        }
+    }
+
+    public function actionUpdate($id)
+    {
+        $this->checkRules();
+        $model = $this->findModel($id);
+
+        if ($model->load(Yii::$app->request->post())) {
+            $model->fileImage = UploadedFile::getInstance($model, 'fileImage');
+            if($model->fileImage){
+                $current_image = $model->img;
+                $dirname = __DIR__.'/../web/images/';
+                $dir = __DIR__.'/../'.$current_image;
+                if(file_exists($dir))
+                {
+                    //удаляем файл
+                    unlink($dir);
+                    $model->img = '';
+                }
+                $d = '/web/images/';
+                $model->img = $d.$model->fileImage->baseName . '.' . $model->fileImage->extension;
+                if(!$model->save()){throw new NotFoundHttpException('The file does not create.');}
+                $model->fileImage->saveAs($dirname . '/' . $model->fileImage->baseName . '.' . $model->fileImage->extension);
+                return $this->redirect(['update', 'id' => $model->id]);
+            }
+            else {
+                if(!$model->save()){throw new NotFoundHttpException('The page does not saved.');}
+                return $this->redirect(['update', 'id' => $model->id]);
+            }
+        }
+        return $this->render('update', [
+            'model' => $model,
+
+        ]);
     }
     public function actionCreate()
     {
-        return $this->render('create');
+        $this->checkRules();
+        $model = new Posts();
+
+        if ($model->load(Yii::$app->request->post())) {
+            $model->fileImage = UploadedFile::getInstance($model, 'fileImage');
+            if($model->fileImage){
+                $dirname = __DIR__.'/../web/images/';
+                $d = '/web/images/';
+                $model->img = $d.$model->fileImage->baseName . '.' . $model->fileImage->extension;
+                if(!$model->save()){throw new NotFoundHttpException('The page does not saved.');}
+                $model->fileImage->saveAs($dirname . '/' . $model->fileImage->baseName . '.' . $model->fileImage->extension);
+                return $this->redirect(['update', 'id' => $model->id]);
+            }
+            else{throw new NotFoundHttpException('The file does not create.');}
+        }
+        else{
+
+            return $this->render('create', [
+                'model' => $model,
+
+            ]);
+
+        }
     }
     public function actionView_posts()
     {
+        $this->checkRules();
         $searchModel = new PostsSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
         return $this->render('view_posts', [
@@ -211,18 +270,35 @@ class SiteController extends Controller
     }
     public function actionCreate_mail()
     {
+        $this->checkRules();
         return $this->render('create_mail');
     }
     public function actionView_mails()
     {
+        $this->checkRules();
         return $this->render('view_mails');
     }
     public function actionCreate_category()
     {
+        $this->checkRules();
         return $this->render('create_category');
     }
     public function actionView_category()
     {
+        $this->checkRules();
         return $this->render('view_category');
+    }
+    public function actionDelete($id)
+    {
+        $model = $this->findModel($id);
+        $current_image = $model->img;
+        $dir = __DIR__.'/../'.$current_image;
+        if(file_exists($dir))
+        {
+            //удаляем файл
+            unlink($dir);
+        }
+        $this->findModel($id)->delete();
+        return $this->redirect(['admin']);
     }
 }
